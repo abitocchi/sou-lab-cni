@@ -1,0 +1,35 @@
+---
+- name: Ensure the data dir is present
+  when: inventory_hostname == "soufe1"
+  ansible.builtin.file:
+    path: /containers_vols/haproxy
+    state: directory
+    mode: '0755'
+
+- name: Ensure HaProxy configuration is present
+  when: inventory_hostname == "soufe1"
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: /containers_vols/haproxy/haproxy.cfg
+    mode: u=rw,g=r,o=r
+
+- name: Ensure HaProxy hosts is present
+  when: inventory_hostname == "soufe1"
+  ansible.builtin.template:
+    src: hosts.j2
+    dest: /etc/hosts
+    mode: u=rw,g=r,o=r
+
+- name: Ensure HaProxy pod is present
+  when: inventory_hostname == "soufe1"
+  containers.podman.podman_container:
+    name: haproxy
+    image: docker.io/haproxy:3.1.2
+    volume:
+      - /containers_vols/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:z
+    expose:
+      - 8080
+      - 8443
+    ports:
+      - "8080:8080"
+      - "8443:8443"

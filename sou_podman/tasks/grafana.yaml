@@ -1,0 +1,35 @@
+---
+- name: Ensure grafana data dir is present
+  when: inventory_hostname == "soube2"
+  loop:
+   - data
+   - config
+  ansible.builtin.file:
+    path: "/containers_vols/grafana/{{ item }}"
+    state: directory
+    owner: "{{ grafana_id }}"
+    group: "{{ grafana_id }}"
+    mode: '0755'
+
+- name: Ensure Grafana configuration is present
+  when: inventory_hostname == "soube2"
+  ansible.builtin.template:
+    src: grafana.ini.j2
+    owner: "{{ grafana_id }}"
+    group: "{{ grafana_id }}"
+    dest: /containers_vols/grafana/config/grafana.ini
+    mode: u=rw,g=r,o=r
+
+- name: Ensure Grafana pod is present
+  when: inventory_hostname == "soube2"
+  containers.podman.podman_container:
+    name: grafana
+    user: "{{ grafana_id }}"
+    image: docker.io/grafana/grafana:11.4.0
+    volume:
+      - /containers_vols/grafana/data:/var/lib/grafana:z
+      - /containers_vols/grafana/config/grafana.ini:/usr/local/etc/grafana/grafana.ini:z
+    expose:
+     - 3000
+    ports:
+      - "3000:3000"
