@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
     soufe1.dns.patterns = [/^(\w+\.)soufe1.lab.local$/, /^grafana.lab.local$/, /^prometheus.lab.local$/]
 
     soufe1.vm.provision "ansible" do |ansible|
-      ansible.verbose = "v"
+      # ansible.verbose = "v"
       ansible.playbook = "install.yaml"
     end
 
@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
     soube2.dns.patterns = [/^(\w+\.)soube2.lab.local$/, /^soube2.lab.local$/]
 
     soube2.vm.provision "ansible" do |ansible|
-      ansible.verbose = "v"
+      # ansible.verbose = "v"
       ansible.playbook = "install.yaml"
     end
 

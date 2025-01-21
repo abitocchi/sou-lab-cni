@@ -18,8 +18,3 @@
   when: inventory_hostname == "soube2"
   ansible.builtin.include_tasks:
     file: grafana.yaml
-
-# - name: Ensure HaProxy is reachable
-#   when: inventory_hostname == "soufe1"
-#   ansible.builtin.uri:
-#     url: http://192.168.0.3:8080/

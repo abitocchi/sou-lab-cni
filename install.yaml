@@ -4,3 +4,14 @@
   become: true
   roles:
    - sou_podman
+
+  post_tasks:
+    - name: Ensure HaProxy is reachable
+      loop:
+        - grafana
+        - prometheus
+      when: inventory_hostname == "soufe1"
+      ansible.builtin.uri:
+        url: http://soufe1:8080/
+        headers:
+          host: "{{ item }}.lab.local"
