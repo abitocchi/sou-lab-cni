@@ -1,6 +1,6 @@
-frontend localhost
-    mode http
-    use_backend soube2 if { hdr(host) -i grafana.lab.local }
+frontend http_front
+   bind *:8080
+   default_backend http_back
 
-backend soube2
-    server soube2 grafana.lab.local
+backend http_back
+   server soube2 192.168.0.2:8080 check
