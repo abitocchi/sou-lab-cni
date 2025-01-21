@@ -1,0 +1,6 @@
+frontend localhost
+    mode http
+    use_backend soube2 if { hdr(host) -i grafana.lab.local }
+
+backend soube2
+    server soube2 grafana.lab.local

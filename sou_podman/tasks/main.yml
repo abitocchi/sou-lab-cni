@@ -1,9 +1,23 @@
 ---
-# tasks file for sou_podman
 - name: Ensure the latest version of podman is present
   ansible.builtin.dnf:
     name: podman
     state: latest
 
-# - name: Ensure HaProxy is installed 
-#   ansible.builtin
+- name: Ensure HaProxy configuration is present
+  when: inventory_hostname == "soufe1"
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy.cfg
+    mode: u=rw,g=r,o=r
+
+- name: Ensure HaProxy pod is present
+  when: inventory_hostname == "soufe1"
+  containers.podman.podman_container:
+    name: haproxy
+    image: docker.io/haproxy:3.1.2
+    volume:
+      - /etc/haproxy.cfg:/etc/haproxy/haproxy.cfg
+    ports:
+      - "80:80"
+      - "443:443"
