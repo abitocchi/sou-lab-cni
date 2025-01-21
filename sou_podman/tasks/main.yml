@@ -4,11 +4,25 @@
     name: podman
     state: latest
 
+- name: Ensure the data dir is present
+  when: inventory_hostname == "soufe1"
+  ansible.builtin.file:
+    path: /containers_vols/haproxy
+    state: directory
+    mode: '0755'
+
 - name: Ensure HaProxy configuration is present
   when: inventory_hostname == "soufe1"
   ansible.builtin.template:
     src: haproxy.cfg.j2
-    dest: /etc/haproxy.cfg
+    dest: /containers_vols/haproxy/haproxy.cfg
+    mode: u=rw,g=r,o=r
+
+- name: Ensure HaProxy hosts is present
+  when: inventory_hostname == "soufe1"
+  ansible.builtin.template:
+    src: hosts.j2
+    dest: /etc/hosts
     mode: u=rw,g=r,o=r
 
 - name: Ensure HaProxy pod is present
@@ -17,12 +31,62 @@
     name: haproxy
     image: docker.io/haproxy:3.1.2
     volume:
-      - /etc/haproxy.cfg:/etc/haproxy/haproxy.cfg
+      - /containers_vols/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:z
+    expose:
+      - 8080
+      - 8443
     ports:
       - "8080:8080"
       - "8443:8443"
 
-- name: Ensure HaProxy is reachable
-  when: inventory_hostname == "soufe1"
-  ansible.builtin.uri:
-    url: http://192.168.0.3:8080/
+- name: Ensure prometheus data dir is present
+  when: inventory_hostname == "soube2"
+  loop:
+   - data
+   - config
+  ansible.builtin.file:
+    path: "/containers_vols/prometheus/{{ item }}"
+    state: directory
+    owner: "{{ prometheus_id }}"
+    group: "{{ prometheus_id }}"
+    mode: '0755'
+
+- name: Ensure Prometheus configuration is present
+  when: inventory_hostname == "soube2"
+  ansible.builtin.template:
+    src: prometheus.yaml.j2
+    owner: "{{ prometheus_id }}"
+    group: "{{ prometheus_id }}"
+    dest: /containers_vols/prometheus/config/prometheus.yaml
+    mode: u=rw,g=r,o=r
+
+- name: Ensure Prometheus pod is present
+  when: inventory_hostname == "soube2"
+  containers.podman.podman_container:
+    name: prometheus
+    user: "{{ prometheus_id }}"
+    image: docker.io/prom/prometheus:v3.1.0
+    volume:
+      - /containers_vols/prometheus/config/prometheus.yaml:/etc/prometheus/prometheus.yml:z
+      - /containers_vols/prometheus/data:/prometheus
+    expose:
+      - 9090
+    ports:
+      - "9090:9090"
+
+- name: Ensure Grafana pod is present
+  when: inventory_hostname == "soube2"
+  containers.podman.podman_container:
+    name: grafana
+    image: docker.io/grafana/grafana:11.4.0
+    volume:
+      - grafana-storage:/var/lib/grafana
+    expose:
+     - 3000
+    ports:
+      - "3000:3000"
+
+# - name: Ensure HaProxy is reachable
+#   when: inventory_hostname == "soufe1"
+#   ansible.builtin.uri:
+#     url: http://192.168.0.3:8080/

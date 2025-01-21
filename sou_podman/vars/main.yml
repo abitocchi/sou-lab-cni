@@ -1,2 +1,3 @@
 ---
 # vars file for sou_podman
+prometheus_id: 1000
