@@ -1,0 +1,6 @@
+---
+- name: Provisioner
+  hosts: all
+  become: true
+  roles:
+   - sou_podman

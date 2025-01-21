@@ -1,0 +1,9 @@
+---
+# tasks file for sou_podman
+- name: Ensure the latest version of podman is present
+  ansible.builtin.dnf:
+    name: podman
+    state: latest
+
+# - name: Ensure HaProxy is installed 
+#   ansible.builtin
