@@ -1,0 +1,38 @@
+---
+
+- name: Ensure required modules are installed
+  ansible.builtin.dnf:
+    name: 
+    - python-setuptools
+    - pip
+    state: present
+    update_cache: yes
+
+- name: Ensure cryptography library is present
+  ansible.builtin.pip:
+    name:
+    - cryptography>=1.2.3
+
+- name: Ensure private key is present(RSA, 4096 bits)
+  community.crypto.openssl_privatekey:
+    path: "{{ haproxy.ssl.private_key_path }}"
+    owner: "{{ haproxy.user_id }}"
+    group: "{{ haproxy.user_id }}"
+
+- name: Ensure certificate signing request (CSR) is present
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: "{{ haproxy.ssl.private_key_path }}"
+    common_name: soufe1
+    organization_name: Sourcesense
+    subject_alt_name:
+      - "DNS:soufe1"
+  register: csr
+
+- name: Ensure self-signed certificate from CSR is present
+  community.crypto.x509_certificate:
+    path: "{{ haproxy.ssl.certificate_path }}"
+    csr_content: "{{ csr.csr }}"
+    privatekey_path: "{{ haproxy.ssl.private_key_path }}"
+    provider: selfsigned
+    owner: "{{ haproxy.user_id }}"
+    group: "{{ haproxy.user_id }}"

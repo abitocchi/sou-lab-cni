@@ -12,6 +12,7 @@
         - prometheus
       when: inventory_hostname == "soufe1"
       ansible.builtin.uri:
-        url: http://soufe1:8080/
+        url: https://soufe1:8443/
+        validate_certs: false
         headers:
           host: "{{ item }}.lab.local"

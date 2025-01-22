@@ -13,6 +13,11 @@
     dest: /containers_vols/haproxy/haproxy.cfg
     mode: u=rw,g=r,o=r
 
+- name: Include certificate creation tasks
+  when: inventory_hostname == "soufe1"
+  ansible.builtin.include_tasks:
+    file: certificates.yaml
+
 - name: Ensure HaProxy hosts is present
   when: inventory_hostname == "soufe1"
   ansible.builtin.template:
@@ -25,8 +30,11 @@
   containers.podman.podman_container:
     name: haproxy
     image: docker.io/haproxy:3.1.2
+    user: "{{ haproxy.user_id }}"
     volume:
       - /containers_vols/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:z
+      - "{{ haproxy.ssl.certificate_path }}:/usr/local/etc/haproxy/certs/certificate.pem:z"
+      - "{{ haproxy.ssl.private_key_path }}:/usr/local/etc/haproxy/certs/certificate.pem.key:z"
     expose:
       - 8080
       - 8443

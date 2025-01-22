@@ -4,7 +4,7 @@
     name: podman
     state: latest
 
-- name: Include prometheus tasks
+- name: Include haproxy tasks
   when: inventory_hostname == "soufe1"
   ansible.builtin.include_tasks:
     file: haproxy.yaml

@@ -17,7 +17,13 @@ grafana:
     http_port: 3000
 
 haproxy:
+  user_id: 1002
+
+  ssl:
+    private_key_path: /containers_vols/haproxy/certificate.key
+    certificate_path: /containers_vols/haproxy/certificate.pem
+
   bind:
-    address: 8080
-    extra_params: ""
-    # extra_params: "ssl crt /usr/local/etc/haproxy/certs/foo.pem"
+    address: 8443
+    # extra_params: ""
+    extra_params: "ssl crt /usr/local/etc/haproxy/certs/certificate.pem"
