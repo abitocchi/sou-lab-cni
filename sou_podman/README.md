@@ -6,7 +6,7 @@ The role allows to configure grafana and prometheus behind haproxy with two virt
 
 Role Variables
 --------------
-
+```yaml
 prometheus:
   user_id: ""
   host: ""
@@ -32,6 +32,7 @@ haproxy:
   bind:
     address: ""
     extra_params: ""
+```
 
 
 Dependencies
