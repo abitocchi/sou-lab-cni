@@ -12,6 +12,10 @@ grafana:
   user_id: 1001
   host: grafana.lab.local
 
+  config:
+    app_mode: development
+    http_port: 3000
+
 haproxy:
   bind:
     address: 8080
