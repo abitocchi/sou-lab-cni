@@ -7,16 +7,16 @@
   ansible.builtin.file:
     path: "/containers_vols/grafana/{{ item }}"
     state: directory
-    owner: "{{ grafana_id }}"
-    group: "{{ grafana_id }}"
+    owner: "{{ grafana.user_id }}"
+    group: "{{ grafana.user_id }}"
     mode: '0755'
 
 - name: Ensure Grafana configuration is present
   when: inventory_hostname == "soube2"
   ansible.builtin.template:
     src: grafana.ini.j2
-    owner: "{{ grafana_id }}"
-    group: "{{ grafana_id }}"
+    owner: "{{ grafana.user_id }}"
+    group: "{{ grafana.user_id }}"
     dest: /containers_vols/grafana/config/grafana.ini
     mode: u=rw,g=r,o=r
 
@@ -24,7 +24,7 @@
   when: inventory_hostname == "soube2"
   containers.podman.podman_container:
     name: grafana
-    user: "{{ grafana_id }}"
+    user: "{{ grafana.user_id }}"
     image: docker.io/grafana/grafana:11.4.0
     volume:
       - /containers_vols/grafana/data:/var/lib/grafana:z

@@ -1,4 +1,19 @@
 ---
 # vars file for sou_podman
-prometheus_id: 1000
-grafana_id: 1001
+
+prometheus:
+  user_id: 1000
+  host: prometheus.lab.local
+
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+grafana:
+  user_id: 1001
+  host: grafana.lab.local
+
+haproxy:
+  bind:
+    address: 8080
+    extra_params: ""
+    # extra_params: "ssl crt /usr/local/etc/haproxy/certs/foo.pem"

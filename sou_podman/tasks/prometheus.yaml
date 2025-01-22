@@ -7,25 +7,16 @@
   ansible.builtin.file:
     path: "/containers_vols/prometheus/{{ item }}"
     state: directory
-    owner: "{{ prometheus_id }}"
-    group: "{{ prometheus_id }}"
+    owner: "{{ prometheus.user_id }}"
+    group: "{{ prometheus.user_id }}"
     mode: '0755'
 
 - name: Ensure Prometheus configuration is present
   when: inventory_hostname == "soube2"
   ansible.builtin.template:
     src: prometheus.yaml.j2
-    owner: "{{ prometheus_id }}"
-    group: "{{ prometheus_id }}"
-    dest: /containers_vols/prometheus/config/prometheus.yaml
-    mode: u=rw,g=r,o=r
-
-- name: Ensure Prometheus configuration is present
-  when: inventory_hostname == "soube2"
-  ansible.builtin.template:
-    src: prometheus.yaml.j2
-    owner: "{{ prometheus_id }}"
-    group: "{{ prometheus_id }}"
+    owner: "{{ prometheus.user_id }}"
+    group: "{{ prometheus.user_id }}"
     dest: /containers_vols/prometheus/config/prometheus.yaml
     mode: u=rw,g=r,o=r
 
@@ -33,7 +24,7 @@
   when: inventory_hostname == "soube2"
   containers.podman.podman_container:
     name: prometheus
-    user: "{{ prometheus_id }}"
+    user: "{{ prometheus.user_id }}"
     image: docker.io/prom/prometheus:v3.1.0
     volume:
       - /containers_vols/prometheus/config/prometheus.yaml:/etc/prometheus/prometheus.yml:z

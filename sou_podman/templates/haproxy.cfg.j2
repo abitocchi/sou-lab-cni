@@ -12,21 +12,20 @@ frontend default
     option nolinger
     maxconn 8000
     timeout client 30s
-    bind *:8080
-    #bind *:8443 ssl crt /usr/local/etc/haproxy/certs/foo.pem
-    acl is_grafana hdr(host) -i grafana.lab.local
+    bind *:{{ haproxy.bind.address }} {{ haproxy.bind.extra_params }}
+    acl is_grafana hdr(host) -i {{ grafana.host }}
     use_backend grafana if is_grafana
-    acl is_prometheus hdr(host) -i prometheus.lab.local
+    acl is_prometheus hdr(host) -i {{ prometheus.host }}
     use_backend prometheus if is_prometheus
 
 backend grafana
     mode http
     balance roundrobin
     option httpchk
-    server grafana1 192.168.0.2:3000 check
+    server soube2 {{ hostvars['soube2']['ansible_all_ipv4_addresses'] | select('match', '^192.168.[0-9]+') | first }}:3000 check
 
 backend prometheus
     mode http
     balance roundrobin
     option httpchk
-    server prometheus1 192.168.0.2:9090 check
+    server soube2 {{ hostvars['soube2']['ansible_all_ipv4_addresses'] | select('match', '^192.168.[0-9]+') | first }}:9090 check

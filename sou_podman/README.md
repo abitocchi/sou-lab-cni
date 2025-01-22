@@ -7,8 +7,8 @@ The role allows to configure grafana and prometheus behind haproxy with two virt
 Role Variables
 --------------
 
-prometheus_id
-grafana_id
+prometheus.user_id
+grafana.user_id
 
 
 Dependencies
