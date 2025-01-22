@@ -25,5 +25,4 @@ haproxy:
 
   bind:
     address: 8443
-    # extra_params: ""
     extra_params: "ssl crt /usr/local/etc/haproxy/certs/certificate.pem"

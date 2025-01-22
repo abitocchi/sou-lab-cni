@@ -7,14 +7,38 @@ The role allows to configure grafana and prometheus behind haproxy with two virt
 Role Variables
 --------------
 
-prometheus.user_id
-grafana.user_id
+prometheus:
+  user_id: ""
+  host: ""
+
+  scrape_interval: ""
+  evaluation_interval: ""
+
+grafana:
+  user_id: ""
+  host: ""
+
+  config:
+    app_mode: ""
+    http_port: ""
+
+haproxy:
+  user_id: ""
+
+  ssl:
+    private_key_path: ""
+    certificate_path: ""
+
+  bind:
+    address: ""
+    extra_params: ""
 
 
 Dependencies
 ------------
 
 - containers.podman
+- community.crypto
 
 Example Playbook
 ----------------
