@@ -1,22 +1,26 @@
 Vagrant.configure("2") do |config|
 
-  config.vm.define "soufe1" do |soufe1|
-    soufe1.vm.box = "almalinux/9"
-    soufe1.vm.box_version = "9.5.20241203"
-    soufe1.vm.network "private_network", ip: "192.168.0.3"
-    soufe1.vm.hostname = "soufe1"
+  config.vm.box = "almalinux/9"
+  config.vm.box_version = "9.5.20241203"
 
-  end
+  boxes = [
+      { :name => "soufe1", :ip => "192.168.0.3" },
+      { :name => "soube2", :ip => "192.168.0.2" }
+  ]
 
-  config.vm.define "soube2" do |soube2|
-    soube2.vm.box = "almalinux/9"
-    soube2.vm.box_version = "9.5.20241203"
-    soube2.vm.network "private_network", ip: "192.168.0.2"
-    soube2.vm.hostname = "soube2"
+  boxes.each do |opts|
+    config.vm.define opts[:name] do |config|
 
-    config.vm.provision :ansible do |ansible|
-      ansible.limit = "all"
-      ansible.playbook = "install.yaml"
+      config.vm.hostname = opts[:name]
+      config.vm.network :private_network, ip: opts[:ip]
+
+      if opts[:name] == "soube2"
+        config.vm.provision "ansible" do |ansible|
+          ansible.limit = "all"
+          ansible.playbook = "install.yaml"
+        end
+      end
+
     end
   end
 
